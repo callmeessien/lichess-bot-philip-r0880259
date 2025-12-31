@@ -9,7 +9,7 @@ import random
 from lib.engine_wrapper import MinimalEngine
 from lib.lichess_types import MOVE, HOMEMADE_ARGS_TYPE
 import logging
-
+from engines.bot.main import get_move
 
 # Use this logger variable to print messages to the console or log files.
 # logger.info("message") will always print "message" to the console or log file.
@@ -19,6 +19,19 @@ logger = logging.getLogger(__name__)
 
 class ExampleEngine(MinimalEngine):
     """An example engine that all homemade engines inherit."""
+
+class PyBot(ExampleEngine):
+    def search(self, board: chess.Board, *args: HOMEMADE_ARGS_TYPE) -> PlayResult:
+        # Higher depth = stronger but slower. Depth 2 is safe for blitz.
+        depth = 3
+
+        chosen_move = get_move(board, depth)
+
+        # Safety fallback: if something goes wrong, just play any legal move
+        if chosen_move is None:
+            chosen_move = next(iter(board.legal_moves))
+
+        return PlayResult(chosen_move, None)
 
 
 # Bot names and ideas from tom7's excellent eloWorld video
